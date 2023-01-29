@@ -4,25 +4,59 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"main/lib"
+	"strings"
 )
 
-type Command struct {
+type CommandHelp struct {
 	Short   string
 	Command string
 	Help    string
 }
 
-type CommandCli struct {
-	commands []Command
-	config   lib.Config
+type Command struct {
+	Command string
+	Flags   map[string]interface{}
+	Args    []string
 }
 
-func NewCommandCli() CommandCli {
-	commands := []Command{
+type CommandCli struct {
+	commandsHelp []CommandHelp
+	config       lib.Config
+	Command      Command
+	color        Color
+}
+
+func NewCommandCli(args []string) CommandCli {
+	commands := []CommandHelp{
 		{Help: "Display help for the given command. When no command is given display help for the list command", Short: "h", Command: "help"},
 	}
 
-	return CommandCli{commands: commands, config: lib.GetConfig()}
+	command := Command{Flags: make(map[string]interface{}), Args: make([]string, 0)}
+	if len(args) > 0 {
+		command.Command = args[0]
+	}
+
+	args = args[1:]
+	i := 0
+	flag := false
+	for _, arg := range args {
+		i++
+
+		if !strings.HasPrefix(arg, "-") {
+			if !flag {
+				command.Args = append(command.Args, arg)
+			}
+			continue
+		}
+		flag = true
+		if len(args) > i && !strings.HasPrefix(args[i], "-") {
+			command.Flags[arg] = args[i]
+		} else {
+			command.Flags[arg] = true
+		}
+	}
+
+	return CommandCli{commandsHelp: commands, config: lib.GetConfig(), Command: command}
 }
 
 func (c *CommandCli) PrintHelp() {
@@ -35,10 +69,14 @@ func (c *CommandCli) PrintHelp() {
 
 	fmt.Println()
 	color.Yellow("Options:")
-	for _, command := range c.commands {
+	for _, command := range c.commandsHelp {
 		fmt.Print(color.GreenString("    -%s, --%s\t", command.Short, command.Command))
 		fmt.Print(command.Help)
 	}
 
 	fmt.Println("")
+}
+
+func (c *CommandCli) Run() {
+	NewMakeCommand(c).CheckCommand()
 }
