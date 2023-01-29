@@ -78,5 +78,10 @@ func (c *CommandCli) PrintHelp() {
 }
 
 func (c *CommandCli) Run() {
-	NewMakeCommand(c).CheckCommand()
+	executeResult := []bool{NewMakeCommand(c).CheckCommand()}
+	for _, result := range executeResult {
+		if !result {
+			c.color.PrintErrorf("Command %s is not defined.\n", c.Command.Command)
+		}
+	}
 }

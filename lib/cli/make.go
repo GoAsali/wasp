@@ -72,17 +72,27 @@ func (cm *CommandMake) makeController() {
 	cm.cli.color.PrintSuccess("Controller created successfully\n")
 }
 
-func (cm *CommandMake) CheckCommand() {
+func (cm *CommandMake) CheckCommand() bool {
+
+	commands := []string{"controller"}
+
 	parts := strings.Split(cm.cli.Command.Command, ":")
 	if parts[0] != "make" {
-		return
+		return false
 	}
 
 	switch parts[1] {
 	case "controller":
 		cm.makeController()
 		break
+	default:
+		cm.cli.color.PrintErrorf("Command \"%s\" is not defined.\n", cm.cli.Command.Command)
+		cm.cli.color.PrintError("Did you mean one of these ?\n")
+		for _, command := range commands {
+			cm.cli.color.PrintErrorf("\tmake:%s\n", command)
+		}
+		return true
 	}
 
-	return
+	return true
 }
