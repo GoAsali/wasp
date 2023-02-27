@@ -5,17 +5,17 @@ import (
 	"log"
 )
 
-type Color struct {
+type Logger struct {
 }
 
-func (c Color) errorColor() *color.Color {
+func (c Logger) errorColor() *color.Color {
 	errorCli := color.New()
 	errorCli.Add(color.FgWhite)
 	errorCli.Add(color.BgRed)
 	return errorCli
 }
 
-func (c Color) PrintErrorf(format string, args ...interface{}) {
+func (c Logger) PrintErrorf(format string, args ...interface{}) {
 	errorCli := c.errorColor()
 	_, err := errorCli.Printf(format, args)
 	if err != nil {
@@ -24,7 +24,7 @@ func (c Color) PrintErrorf(format string, args ...interface{}) {
 	}
 }
 
-func (c Color) PrintError(format string) {
+func (c Logger) PrintError(format string) {
 	errorCli := c.errorColor()
 	_, err := errorCli.Print(format)
 	if err != nil {
@@ -33,10 +33,10 @@ func (c Color) PrintError(format string) {
 	}
 }
 
-func (c Color) PrintSuccessF(format string, args ...interface{}) {
+func (c Logger) PrintSuccessF(format string, args ...interface{}) {
 	color.Green(format, args)
 }
 
-func (c Color) PrintSuccess(str string) {
+func (c Logger) PrintSuccess(str string) {
 	color.Green(str)
 }

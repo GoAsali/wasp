@@ -19,6 +19,10 @@ func NewMakeCommand(cli *CommandCli) *CommandMake {
 }
 
 func (cm *CommandMake) makeController() {
+	if len(cm.cli.Command.Args) == 0 {
+		cm.cli.logger.PrintError("You must specify a controller name")
+		return
+	}
 	name := cm.cli.Command.Args[0]
 
 	// Check controller folder was exists, if not create it
@@ -26,10 +30,10 @@ func (cm *CommandMake) makeController() {
 		err := os.Mkdir("controllers", 0755)
 		if err != nil {
 			if os.IsPermission(err) {
-				cm.cli.color.PrintError("You need permission to current folder to create controllers\n")
+				cm.cli.logger.PrintError("You need permission to current folder to create controllers\n")
 				return
 			}
-			cm.cli.color.PrintError("Could not create controllers")
+			cm.cli.logger.PrintError("Could not create controllers")
 			return
 		}
 	}
@@ -37,7 +41,7 @@ func (cm *CommandMake) makeController() {
 	fileName := fmt.Sprintf("controllers/%s.go", name)
 
 	if _, err := os.Stat(fileName); err == nil {
-		cm.cli.color.PrintErrorf("Controller %s already exists\n", name)
+		cm.cli.logger.PrintErrorf("Controller %s already exists\n", name)
 		return
 	}
 
@@ -66,10 +70,10 @@ func (cm *CommandMake) makeController() {
 	}
 	err = file.Close()
 	if err != nil {
-		cm.cli.color.PrintErrorf("Error during writing template", "")
+		cm.cli.logger.PrintErrorf("Error during writing template", "")
 	}
 
-	cm.cli.color.PrintSuccess("Controller created successfully\n")
+	cm.cli.logger.PrintSuccess("Controller created successfully\n")
 }
 
 func (cm *CommandMake) CheckCommand() bool {
@@ -86,10 +90,10 @@ func (cm *CommandMake) CheckCommand() bool {
 		cm.makeController()
 		break
 	default:
-		cm.cli.color.PrintErrorf("Command \"%s\" is not defined.\n", cm.cli.Command.Command)
-		cm.cli.color.PrintError("Did you mean one of these ?\n")
+		cm.cli.logger.PrintErrorf("Command \"%s\" is not defined.\n", cm.cli.Command.Command)
+		cm.cli.logger.PrintError("Did you mean one of these ?\n")
 		for _, command := range commands {
-			cm.cli.color.PrintErrorf("\tmake:%s\n", command)
+			cm.cli.logger.PrintErrorf("\tmake:%s\n", command)
 		}
 		return true
 	}

@@ -23,7 +23,7 @@ type CommandCli struct {
 	commandsHelp []CommandHelp
 	config       lib.Config
 	Command      Command
-	color        Color
+	logger       Logger
 }
 
 func NewCommandCli(args []string) CommandCli {
@@ -81,7 +81,7 @@ func (c *CommandCli) Run() {
 	executeResult := []bool{NewMakeCommand(c).CheckCommand()}
 	for _, result := range executeResult {
 		if !result {
-			c.color.PrintErrorf("Command %s is not defined.\n", c.Command.Command)
+			c.logger.PrintErrorf("Command %s is not defined.\n", c.Command.Command)
 		}
 	}
 }
