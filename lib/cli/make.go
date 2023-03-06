@@ -45,7 +45,14 @@ func (cm *CommandMake) makeMiddleware() {
 	}
 	name := cm.cli.Command.Args[0]
 
-	service := MiddleService
+	service := MakeService.CreateNewMiddlewareService()
+	middleware, err := service.CreateNewMiddleware(name)
+	if err != nil {
+		cm.cli.logger.PrintError(err.Error())
+		return
+	}
+
+	cm.cli.logger.PrintSuccess(middleware)
 }
 
 func (cm *CommandMake) CheckCommand() bool {
@@ -60,6 +67,9 @@ func (cm *CommandMake) CheckCommand() bool {
 	switch parts[1] {
 	case "controller":
 		cm.makeController()
+		break
+	case "middleware":
+		cm.makeMiddleware()
 		break
 	default:
 		cm.cli.logger.PrintErrorf("Command \"%s\" is not defined.\n", cm.cli.Command.Command)

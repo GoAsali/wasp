@@ -2,16 +2,17 @@ package make
 
 import "main/templates/middlewares"
 
-type MakeMiddleware struct {
-	make Make
+type Middleware struct {
+	make *Make
 }
 
-func CreateNewMiddlewareService() Make {
-	return Make{ModuleType: "middleware", folder: "middlewares"}
+func CreateNewMiddlewareService() Middleware {
+	return Middleware{
+		make: CreateNewMakeService("middlewares", "middleware"),
+	}
 }
 
-func (m *MakeMiddleware) CreateNewMiddleware(name string) (string, error) {
-	temp = middlewares.CreateNewMiddlewareTemplate()
-	temp.
-		m.make.createFile(name)
+func (m *Middleware) CreateNewMiddleware(name string) (string, error) {
+	temp := middlewares.CreateNewMiddlewareTemplate()
+	return m.make.createFile(name, temp.CreateMiddleware(name))
 }
